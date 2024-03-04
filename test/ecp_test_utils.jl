@@ -1,7 +1,7 @@
 import Ecp
 
 using Test
-"""
+
 @testset "vectorisation test" begin
     contributions = Dict{Tuple{Int64, Int64, Int64}, Int64}()
     SIZE = 2
@@ -12,9 +12,7 @@ using Test
             end
         end
     end
-    println(contributions)
     vectorisation = Ecp.vectorize_ecp(contributions, (SIZE - 1, SIZE - 1, SIZE - 1))
-    println(vectorisation)
     for i in 1:SIZE
         for j in 1:SIZE
             for k in 1:SIZE
@@ -23,7 +21,6 @@ using Test
         end
     end
 end
-"""
 
 @testset "cubic ECP test" begin
     solid_cube = Array{Tuple{Float64, Float64}}(undef, 5, 5, 5)
