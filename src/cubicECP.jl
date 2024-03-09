@@ -2,7 +2,7 @@ import ImageFiltering
 
 function mins_for_tuples(tuples)
     N = size(tuples[1], 1)
-    return NTuple{N, Float64}(minimum(tuples[j][i] for j in 1:length(tuples)) for i in 1:N)
+    return NTuple{N, typeof(tuples[1][1])}(minimum(tuples[j][i] for j in 1:length(tuples)) for i in 1:N)
 end
 
 function calc_filtration_for_0_dim(i, j, k, image)
@@ -11,15 +11,15 @@ function calc_filtration_for_0_dim(i, j, k, image)
 end
 
 function calc_filtration_for_1_dim_horisontal(i, j, k, image)
-    return mins_for_tuples((image[i-1, j-1, k-1],  image[i, j-1, k-1], image[i, j, k-1], image[i-1, j, k-1]))
+    return mins_for_tuples((image[i, j-1, k],  image[i, j, k-1], image[i, j-1, k-1], image[i, j, k]))
 end
 
 function calc_filtration_for_1_dim_vertical(i, j, k, image)
-    return mins_for_tuples((image[i-1, j-1, k-1], image[i, j-1, k-1], image[i-1, j-1, k],  image[i, j-1, k]))
+    return mins_for_tuples((image[i-1, j, k-1], image[i, j, k-1], image[i-1, j, k],  image[i, j, k]))
 end
 
 function calc_filtration_for_1_dim_depth(i, j, k, image)
-    return mins_for_tuples((image[i-1, j-1, k-1], image[i-1, j, k-1], image[i-1, j-1, k], image[i-1, j, k]))
+    return mins_for_tuples((image[i, j-1, k], image[i-1, j, k], image[i-1, j-1, k], image[i, j, k]))
 end
 
 
