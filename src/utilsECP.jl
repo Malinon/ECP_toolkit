@@ -63,3 +63,18 @@ function vectorize_ecp(ecp::Dict{NTuple{PARAM_NUM, T}, Int64}, number_of_steps) 
     agregate_ecp_deltas(ecp_array_out)
     return ecp_array_out
 end
+
+"""
+Vectorize ECP
+
+Input:  ecp - dictionary consisting of filtrations as keys and contributions as values.
+        number_of_steps - Tuple containing number of steps for each filtration parameter.
+Return: FILT_PARAM_NUMBER - dimensional array containing vectorised ECP
+        Shape of the array is (number_of_steps[i] + 1)_{i=1...FILT_PARAM_NUMBAR}
+"""
+function py_vectorize_ecp(ecp::Dict{Any, Any}, number_of_steps)
+    for filtration in keys(ecp)
+        type_of_filt = typeof(filtration)
+        return vectorize_ecp(convert(Dict{type_of_filt, Int64}, ecp), number_of_steps)
+    end
+end
