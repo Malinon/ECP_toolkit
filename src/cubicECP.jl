@@ -66,6 +66,17 @@ function compute_contributions_2d(image::Array{NTuple{PARAM_NUM, T}}) where {PAR
     return contributions
 end
 
+function compute_contributions_2d(image::Array{T, 3}) where T
+    PARAM_NUM = size(image, 3)
+    converted_image = Array{NTuple{PARAM_NUM, T}}(undef, size(image, 1), size(image, 2))
+    for x in 1:size(image, 1)
+        for y in 1:size(image, 2)
+            converted_image[x,y] = NTuple{PARAM_NUM, T}(image[x,y,fil_id] for fil_id in 1:PARAM_NUM)
+        end
+    end
+    return compute_contributions_2d(converted_image)
+end
+
 
 """
 Compute cotributions of cells to ECP.
@@ -124,4 +135,17 @@ function compute_contributions_3d(image::Array{NTuple{PARAM_NUM, T}}) where {PAR
     delete!(contributions, INFINITY_T)
     
     return contributions
+end
+
+function compute_contributions_3d(image::Array{T, 4}) where T
+    PARAM_NUM = size(image, 4)
+    converted_image = Array{NTuple{PARAM_NUM, T}}(undef, size(image, 1), size(image, 2), size(image, 3))
+    for x in 1:size(image, 1)
+        for y in 1:size(image, 2)
+            for z in 1:size(image, 3)
+                converted_image[x,y,z] = NTuple{PARAM_NUM, T}(image[x,y,z,fil_id] for fil_id in 1:PARAM_NUM)
+            end
+        end
+    end
+    return compute_contributions_3d(converted_image)
 end
