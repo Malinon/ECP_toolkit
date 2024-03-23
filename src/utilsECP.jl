@@ -77,4 +77,23 @@ function py_vectorize_ecp(ecp::Dict{Any, Any}, number_of_steps)
         type_of_filt = typeof(filtration)
         return vectorize_ecp(convert(Dict{type_of_filt, Int64}, ecp), number_of_steps)
     end
+
+function read_input_from_perseus_file(file_path)
+    file_content = readlines(file_path)
+    # Determine dimensions of cubical complex
+    dim = parse(Int64, file_content[1])
+    sizes = Tuple(parse(Int64, file_content[i]) for i in 2:(dim+1))
+    # Determine type of multifiltrations and number of parameters
+    first_line_filtration = split(file_content[2 + dim])
+    PARAM_NUM = length(first_line_filtration)
+    FILT_PARAM_TYPE =  tryparse(Int64, first_line_filtration[1]) == nothing ? Float64 : Int64
+    output_array = Array{NTuple{PARAM_NUM, FILT_PARAM_TYPE}}(undef, sizes...)
+    # fill array with max dim cells filtration
+    file_index = 1 + 1 + dim
+    for k in Base.Iterators.product((1:sizes[i] for i in 1:length(sizes))...)
+        line_filtration_str = split(file_content[file_index])
+        output_array[k...] = NTuple{PARAM_NUM, FILT_PARAM_TYPE}(parse(FILT_PARAM_TYPE, line_filtration_str[i]) for i in 1:PARAM_NUM)
+    end
+
+    return output_array
 end
