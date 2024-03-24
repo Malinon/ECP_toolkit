@@ -77,6 +77,7 @@ function py_vectorize_ecp(ecp::Dict{Any, Any}, number_of_steps)
         type_of_filt = typeof(filtration)
         return vectorize_ecp(convert(Dict{type_of_filt, Int64}, ecp), number_of_steps)
     end
+end
 
 function read_input_from_perseus_file(file_path)
     file_content = readlines(file_path)
