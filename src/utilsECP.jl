@@ -98,3 +98,70 @@ function read_input_from_perseus_file(file_path)
 
     return output_array
 end
+
+function is_less_fil(fil1, fil2)
+    for i in 1:length(fil1)
+        if fil1[i] >= fil2[i]
+            return false
+        end
+    end
+    return true
+end
+
+function get_ecp_at_filtration(ecp_vec, filt_value)
+    acc = 0
+    for i in 1:length(ecp_vec)
+        if is_less_fil(ecp_vec[i][1], filt_value)
+            acc += ecp_vec[i][2]
+        end
+    end
+    return acc
+end
+
+
+function index_to_filtrations(index, filtration_values)
+    return Tuple(filtration_values[i][index[i]] for i in 1:length(index))
+end
+
+function norm(ecp_diff::Dict{NTuple{PARAM_NUM, T}, Int64} ) where {PARAM_NUM, T}
+    filtratin_values = Array{Array{T}}(undef, PARAM_NUM)
+    for i in 1:PARAM_NUM
+        filt_vals = Set( filt_tuple[i] for filt_tuple in keys(ecp_diff))
+        filtratin_values[i] = collect(filt_vals)
+        sort!(filtratin_values[i])
+    end
+
+    norm_acc = 0.0
+    ecp_diff_vec = collect(ecp_diff)
+    for k in Base.Iterators.product((2:length(filtratin_values[i]) for i in 1:length(filtratin_values))...)
+        tup_index = Tuple(k)
+        area = 1.0
+        for i in 1:length(tup_index)
+            area *= abs(filtratin_values[i][tup_index[i] - 1] - filtratin_values[i][tup_index[i]])
+        end
+        norm_acc += area * abs(get_ecp_at_filtration(ecp_diff_vec, index_to_filtrations(k, filtratin_values)))
+    end
+
+    return norm_acc
+end
+
+function calculate_diff(ecp1::Dict{T, Int64}, ecp2::Dict{T, Int64}) where {T}
+    ecp_diff = deepcopy(ecp1)
+    for filtration in keys(ecp2)
+        ecp_diff[filtration] = get(ecp_diff, filtration, 0) - ecp2[filtration]
+    end
+    return ecp_diff
+end
+
+function prune_ecp!(ecp_diff, fmin, fmax)
+    filt_function = contribution -> contribution[2] != 0 && fmin <= contribution[1] && contribution[1] <= fmax 
+    filter!(filt_function, ecp_diff)
+end
+
+function distance_ecp(ecp1, ecp2, fmins, fmaxs)
+    ecp_diff = calculate_diff(ecp1, ecp2)
+    prune_ecp!(ecp_diff, fmins, fmaxs)
+    ecp_diff[fmins] = get(ecp_diff, fmins, 0)
+    ecp_diff[fmaxs] = get(ecp_diff, fmaxs, 0)
+    return norm(ecp_diff)
+end
