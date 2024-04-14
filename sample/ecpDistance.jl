@@ -9,7 +9,6 @@ ecp_2 = Serialization.deserialize(ARGS[2])
 filt_params = 0
 fitlt_types = Int64
 for k in keys(ecp_1)
-    println(k)
     global filt_params = length(k)
     global filt_type = typeof(k[1])
     break
