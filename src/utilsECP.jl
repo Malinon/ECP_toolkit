@@ -108,6 +108,15 @@ function is_less_fil(fil1, fil2)
     return true
 end
 
+function is_less_eq_fil(fil1, fil2)
+    for i in 1:length(fil1)
+        if fil1[i] > fil2[i]
+            return false
+        end
+    end
+    return true
+end
+
 function get_ecp_at_filtration(ecp_vec, filt_value)
     acc = 0
     for i in 1:length(ecp_vec)
@@ -154,7 +163,7 @@ function calculate_diff(ecp1::Dict{T, Int64}, ecp2::Dict{T, Int64}) where {T}
 end
 
 function prune_ecp!(ecp_diff, fmin, fmax)
-    filt_function = contribution -> contribution[2] != 0 && fmin <= contribution[1] && contribution[1] <= fmax 
+    filt_function = contribution -> contribution[2] != 0 && is_less_eq_fil(fmin, contribution[1]) && is_less_eq_fil(contribution[1], fmax) 
     filter!(filt_function, ecp_diff)
 end
 
